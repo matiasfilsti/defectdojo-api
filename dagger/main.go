@@ -1,4 +1,4 @@
-// A generated module for Go01 functions
+// A generated module for DefectdojoApi functions
 //
 // This module has been generated via dagger init and serves as a reference to
 // basic module structure as you get started with Dagger.
@@ -16,15 +16,30 @@ package main
 
 import (
 	"context"
+	"dagger/defectdojo-api/internal/dagger"
 	"fmt"
 	"math"
 	"math/rand"
-	"ml-challenge/dagger/internal/dagger"
 )
 
-type Go01 struct{}
+type DefectdojoApi struct{}
 
-func (m *Go01) Publish(ctx context.Context, source *Directory) (string, error) {
+// // Returns a container that echoes whatever string argument is provided
+// func (m *DefectdojoApi) ContainerEcho(stringArg string) *dagger.Container {
+// 	return dag.Container().From("alpine:latest").WithExec([]string{"echo", stringArg})
+// }
+
+// // Returns lines that match a pattern in the files of the provided Directory
+// func (m *DefectdojoApi) GrepDir(ctx context.Context, directoryArg *dagger.Directory, pattern string) (string, error) {
+// 	return dag.Container().
+// 		From("alpine:latest").
+// 		WithMountedDirectory("/mnt", directoryArg).
+// 		WithWorkdir("/mnt").
+// 		WithExec([]string{"grep", "-R", pattern, "."}).
+// 		Stdout(ctx)
+// }
+
+func (m *DefectdojoApi) Publish(ctx context.Context, source *dagger.Directory) (string, error) {
 	builder := dag.Container().
 		From("golang:1.22.1").
 		WithDirectory("/src", source).
@@ -48,7 +63,7 @@ func (m *Go01) Publish(ctx context.Context, source *Directory) (string, error) {
 	return address, nil
 }
 
-func (m *Go01) TestAll(ctx context.Context, source *Directory) (string, error) {
+func (m *DefectdojoApi) TestAll(ctx context.Context, source *dagger.Directory) (string, error) {
 	result, err := m.Lint(ctx, source)
 	if err != nil {
 		return "", err
@@ -58,7 +73,7 @@ func (m *Go01) TestAll(ctx context.Context, source *Directory) (string, error) {
 }
 
 // Returns a container that echoes whatever string argument is provided
-func (m *Go01) Test(ctx context.Context, source *Directory) *Container {
+func (m *DefectdojoApi) Test(ctx context.Context, source *dagger.Directory) *dagger.Container {
 	result := m.BuildEnv(source).
 		WithExec([]string{"go", "test", "./...", "-v"}).
 		WithExec([]string{"go", "mod", "verify"}).
@@ -67,24 +82,25 @@ func (m *Go01) Test(ctx context.Context, source *Directory) *Container {
 	return result
 }
 
-func (m *Go01) Lint(ctx context.Context, source *Directory) (string, error) {
+func (m *DefectdojoApi) Lint(ctx context.Context, source *dagger.Directory) (string, error) {
 	return m.Test(ctx, source).
-		WithExec([]string{"go", "install", "github.com/golangci/golangci-lint/cmd/golangci-lint@v1.59.1"}).
+		WithExec([]string{"go", "install", "github.com/golangci/golangci-lint/cmd/golangci-lint@v1.60.2"}).
 		WithExec([]string{"pwd"}).
-		WithExec([]string{"golangci-lint", "run", "./src", "./modules/...", "--issues-exit-code=1"}).
+		WithExec([]string{"ls", "-la"}).
+		WithExec([]string{"golangci-lint", "run", "-v", "./src/...", "./modules/...", "--issues-exit-code=1"}).
 		Stdout(ctx)
 }
 
 // Build a ready-to-use development environment
-func (m *Go01) BuildEnv(source *Directory) *Container {
+func (m *DefectdojoApi) BuildEnv(source *dagger.Directory) *dagger.Container {
 	return dag.Container().
-		From("golang:1.22.1").
+		From("golang:1.22.5").
 		WithDirectory("/src", source).
 		WithWorkdir("/src")
 
 }
 
-func (m *Go01) HttpService(ctx context.Context, source *Directory) *dagger.Service {
+func (m *DefectdojoApi) HttpService(ctx context.Context, source *dagger.Directory) *dagger.Service {
 	return m.BuildEnv(source).
 		WithExec([]string{"go", "run", "src/main.go"}).
 		WithExposedPort(8080).
@@ -92,7 +108,7 @@ func (m *Go01) HttpService(ctx context.Context, source *Directory) *dagger.Servi
 }
 
 // Send a request to an HTTP service and return the response
-func (m *Go01) Get(ctx context.Context, source *Directory) (string, error) {
+func (m *DefectdojoApi) Get(ctx context.Context, source *dagger.Directory) (string, error) {
 	return dag.Container().
 		From("alpine").
 		WithServiceBinding("www", m.HttpService(ctx, source)).
