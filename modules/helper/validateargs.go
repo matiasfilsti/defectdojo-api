@@ -19,7 +19,7 @@ const lenToken = 40
 func ValidateValues(args []string) (string, error) {
 	_, err := validateArgs(args)
 	if err != nil {
-		return "", fmt.Errorf("error occurred: %s", err.Error())
+		return "", fmt.Errorf("error occurred validating arguments: %w", err)
 	}
 	dojoURL := os.Args[1]
 	token := os.Args[2]
@@ -28,22 +28,22 @@ func ValidateValues(args []string) (string, error) {
 	_, err = validateURL(dojoURL)
 
 	if err != nil {
-		return "", fmt.Errorf("error occurred: %s", err.Error())
+		return "", fmt.Errorf("error occurred validating url: %w", err)
 	}
 	_, err = validateToken(token)
 
 	if err != nil {
-		return "", fmt.Errorf("error occurred: %s", err.Error())
+		return "", fmt.Errorf("error occurred validating token: %w", err)
 	}
 	_, err = validateConfigFile(configFile)
 
 	if err != nil {
-		return "", fmt.Errorf("error occurred: %s", err.Error())
+		return "", fmt.Errorf("error occurred validating configuration: %w", err)
 	}
 	_, err = validateReportFile(reportFile)
 
 	if err != nil {
-		return "", fmt.Errorf("error occurred %s", err.Error())
+		return "", fmt.Errorf("error occurred validatiing report : %w", err)
 	}
 
 	return "Validation complete", nil
