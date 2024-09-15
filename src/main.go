@@ -9,6 +9,7 @@ import (
 
 func main() {
 	args := os.Args[0:]
+	fmt.Println(args)
 	validate, err := helper.ValidateValues(args)
 
 	if err != nil {

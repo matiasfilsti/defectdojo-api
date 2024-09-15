@@ -108,7 +108,9 @@ func postURL(dojoURL string, token string, body *bytes.Buffer, writer *multipart
 	if err != nil {
 		return "", fmt.Errorf("error reading response body: %w", err)
 	}
-
+	fmt.Println(resp.StatusCode)
+	fmt.Println(resp.Status)
+	fmt.Println(resp)
 	return string(responseBody), nil
 }
 

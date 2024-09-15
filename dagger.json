@@ -1,6 +1,12 @@
 {
   "name": "defectdojo-api",
   "sdk": "go",
+  "dependencies": [
+    {
+      "name": "trivy",
+      "source": "github.com/jpadams/daggerverse/trivy@1e7077df01ea8c849620c6fe2e7993b223c48bb4"
+    }
+  ],
   "source": "dagger",
   "engineVersion": "v0.12.5"
 }
